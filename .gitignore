@@ -65,7 +65,7 @@ target/
 #custom
 .flattened-pom.xml
 .tern-project
-sched-client-demo/src/main/resources/META-INF/microprofile-config.properties
+universe-client-demo/src/main/resources/META-INF/microprofile-config.properties
 
 # == IntelliJ ==
 *.iml
