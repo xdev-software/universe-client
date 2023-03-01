@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Sessionize API for Java</name>
+    <name>Universe API for Java</name>
     <description>This library provides an easy Java-API to read data from the Universe GraphQL-API</description>
     <url>https://github.com/xdev-software/universe-client</url>
 
@@ -75,24 +75,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.14.2</version>
-        </dependency>
-
-        <!-- Dependency for a retry-policy when making calls to external APIs -->
-        <dependency>
-            <groupId>com.github.rholder</groupId>
-            <artifactId>guava-retrying</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <!-- Components for creating and handling requests in the Client class -->
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+            <version>20.0</version>
         </dependency>
 
         <!-- Saves sensible Data in a .properties file and provides the data only during runtime -->

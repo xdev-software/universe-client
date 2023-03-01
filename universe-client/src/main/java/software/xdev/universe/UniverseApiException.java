@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.sched;
+package software.xdev.universe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-
-public interface HasLogger
+public class UniverseApiException extends Exception
 {
-	default Logger getLogger()
+	public UniverseApiException(final String message)
 	{
-		return LogManager.getLogger(this.getClass());
+		super(message);
+	}
+	
+	public UniverseApiException(final String errorMessage, final Exception e)
+	{
+		super(errorMessage, e);
 	}
 }
