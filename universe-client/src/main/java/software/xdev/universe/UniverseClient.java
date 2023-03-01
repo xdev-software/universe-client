@@ -15,18 +15,21 @@
  */
 package software.xdev.universe;
 
-import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.eclipse.microprofile.config.ConfigProvider;
-
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.StaticDataFetcher;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
 
 
 /**
@@ -36,8 +39,47 @@ public class UniverseClient
 {
 	public static final String PROPERTY_SESSIONIZE_API_KEY = "universe.api.key";
 	public static final String FAILED_TO_EXECUTE_CALL_TO_SESSIONIZE_API = "Failed to execute call to Sessionize-API.";
-	
+	public static final String UNIVERSE_GRAPHQL_URL = "https://www.universe.com/graphql";
 	private String apiKey = null;
+	
+	public static final String requestBuyers(String eventId)
+	{
+		return " \"query\": \"query GraphqlExample {\n"
+			+ "    event(id: " + eventId + ") {\n"
+			+ "      orders {\n"
+			+ "        totalCount\n"
+			+ "        nodes(limit: 2) {\n"
+			+ "          id\n"
+			+ "          state\n"
+			+ "          createdAt\n"
+			+ "          orderItems {\n"
+			+ "            totalCount\n"
+			+ "          }\n"
+			+ "          timeSlot {\n"
+			+ "            startAt\n"
+			+ "            endAt\n"
+			+ "          }\n"
+			+ "          buyer {\n"
+			+ "            name\n"
+			+ "            email\n"
+			+ "          }\n"
+			+ "        }\n"
+			+ "      }\n"
+			+ "    }\n"
+			+ "  }\"";
+	}
+	
+	public static CloseableHttpResponse callGraphQLService(String url, String query)
+		throws URISyntaxException, IOException
+	{
+		CloseableHttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(url);
+		URI uri = new URIBuilder(request.getURI())
+			.addParameter("query", query)
+			.build();
+		request.setURI(uri);
+		return client.execute(request);
+	}
 	
 	public UniverseClient withApiKey(final String apiKey)
 	{
@@ -60,23 +102,31 @@ public class UniverseClient
 		return this.apiKey;
 	}
 	
-	public String main()
+	public String main() throws IOException, URISyntaxException
 	{
-		String schema = "type Query{hello: String}";
-		
-		SchemaParser schemaParser = new SchemaParser();
-		TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
-		
-		RuntimeWiring runtimeWiring = newRuntimeWiring()
-			.type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
-			.build();
-		
-		SchemaGenerator schemaGenerator = new SchemaGenerator();
-		GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
-		
-		GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
-		ExecutionResult executionResult = build.execute("{hello}");
-		
-		return executionResult.getData().toString();
+		HttpResponse httpResponse = callGraphQLService(UNIVERSE_GRAPHQL_URL, requestBuyers("63d23a98cf489d0021b396b3"
+		));
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity()
+			.getContent(), StandardCharsets.UTF_8)))
+		{
+			return reader.lines().parallel().collect(Collectors.joining("\n"));
+		}
+		//
+		// String schema = "type Query{hello: String}";
+		//
+		// SchemaParser schemaParser = new SchemaParser();
+		// TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
+		//
+		// RuntimeWiring runtimeWiring = newRuntimeWiring()
+		// 	.type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
+		// 	.build();
+		//
+		// SchemaGenerator schemaGenerator = new SchemaGenerator();
+		// GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
+		//
+		// GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
+		// ExecutionResult executionResult = build.execute("{hello}");
+		//
+		// return executionResult.getData().toString();
 	}
 }
