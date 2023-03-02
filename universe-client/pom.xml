@@ -87,6 +87,16 @@
             <version>4.5.14</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.14.2</version>
+        </dependency>
 
         <!-- Saves sensible Data in a .properties file and provides the data only during runtime -->
         <!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->

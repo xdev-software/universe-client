@@ -18,115 +18,188 @@ package software.xdev.universe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.eclipse.microprofile.config.ConfigProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import software.xdev.universe.dtos.get_buyers.Buyer;
+import software.xdev.universe.dtos.get_buyers.ResponseGetBuyers;
+import software.xdev.universe.requests.GetBuyersRequest;
 
 
 /**
  * Client to communicate with the sessionize API.
  */
-public class UniverseClient
+public class UniverseClient implements HasLogger
 {
-	public static final String PROPERTY_SESSIONIZE_API_KEY = "universe.api.key";
-	public static final String FAILED_TO_EXECUTE_CALL_TO_SESSIONIZE_API = "Failed to execute call to Sessionize-API.";
 	public static final String UNIVERSE_GRAPHQL_URL = "https://www.universe.com/graphql";
-	private String apiKey = null;
+	public static final String UNIVERSE_OAUTH_TOKEN = "https://www.universe.com/oauth/token";
+	public static final String UNIVERSE_OAUTH_AUTHORIZE_URL = "https://www.universe.com/oauth/authorize";
 	
-	public static final String requestBuyers(String eventId)
+	private UniverseConfiguration config = new UniverseConfiguration();
+	
+	private static final String requestToken(
+		final String applicationId,
+		final String applicationSecret,
+		final String authorizationCode,
+		final String redirectUri)
 	{
-		return " \"query\": \"query GraphqlExample {\n"
-			+ "    event(id: " + eventId + ") {\n"
-			+ "      orders {\n"
-			+ "        totalCount\n"
-			+ "        nodes(limit: 2) {\n"
-			+ "          id\n"
-			+ "          state\n"
-			+ "          createdAt\n"
-			+ "          orderItems {\n"
-			+ "            totalCount\n"
-			+ "          }\n"
-			+ "          timeSlot {\n"
-			+ "            startAt\n"
-			+ "            endAt\n"
-			+ "          }\n"
-			+ "          buyer {\n"
-			+ "            name\n"
-			+ "            email\n"
-			+ "          }\n"
-			+ "        }\n"
-			+ "      }\n"
-			+ "    }\n"
-			+ "  }\"";
+		return "{ \"grant_type\": \"authorization_code\", \"client_id\":\"" + applicationId + "\", \"client_secret"
+			+ "\":\""
+			+ applicationSecret + "\", \"redirect_uri\":\"" + redirectUri + "\", \"code\":\"" + authorizationCode
+			+ "\"}";
 	}
 	
-	public static CloseableHttpResponse callGraphQLService(String url, String query)
-		throws URISyntaxException, IOException
+	public UniverseClient withConfig(UniverseConfiguration config)
 	{
-		CloseableHttpClient client = HttpClientBuilder.create().build();
-		HttpGet request = new HttpGet(url);
-		URI uri = new URIBuilder(request.getURI())
-			.addParameter("query", query)
-			.build();
-		request.setURI(uri);
-		return client.execute(request);
-	}
-	
-	public UniverseClient withApiKey(final String apiKey)
-	{
-		this.apiKey = apiKey;
+		this.config = config;
 		return this;
 	}
 	
-	private String getApiKey()
+	public UniverseConfiguration getConfig()
 	{
-		if(this.apiKey == null)
-		{
-			this.apiKey = ConfigProvider.getConfig().getValue(PROPERTY_SESSIONIZE_API_KEY, String.class);
-			if(this.apiKey == null)
-			{
-				throw new RuntimeException(
-					"Sessionize API-Key not configured. Please set Property '" + PROPERTY_SESSIONIZE_API_KEY
-						+ "' in the properties or call method #withApiKey.");
-			}
-		}
-		return this.apiKey;
+		return this.config;
 	}
 	
-	public String main() throws IOException, URISyntaxException
+	/**
+	 * After authorization on the returned URL, the authorization code is displayed. We need this code to call
+	 * {@link #getBearerToken()}.
+	 *
+	 * @return a url to call to get the {@link UniverseConfiguration#getAuthorizationCode()}
+	 */
+	public String getUrlToGetAuthorizationCode()
 	{
-		HttpResponse httpResponse = callGraphQLService(UNIVERSE_GRAPHQL_URL, requestBuyers("63d23a98cf489d0021b396b3"
-		));
+		return getUrlToGetAuthorizationCode(
+			getConfig().getApplicationId(),
+			getConfig().getRedirectUri()
+		);
+	}
+	
+	/**
+	 * After authorization on the returned URL, the authorization code is displayed. We need this code to call
+	 * {@link #getBearerToken()}.
+	 *
+	 * @return a url to call to get the {@link UniverseConfiguration#getAuthorizationCode()}
+	 */
+	public String getUrlToGetAuthorizationCode(
+		final String applicationId,
+		final String redirectUri
+	)
+	{
+		return UNIVERSE_OAUTH_AUTHORIZE_URL + "?"
+			+ "response_type=code&"
+			+ "scope=public&"
+			+ "client_id=" + applicationId
+			+ "&redirect_uri=" + redirectUri;
+	}
+	
+	public String getBearerToken() throws IOException
+	{
+		return getBearerToken(
+			getConfig().getApplicationId(),
+			getConfig().getApplicationSecret(),
+			getConfig().getAuthorizationCode(),
+			getConfig().getRedirectUri()
+		);
+	}
+	
+	public String getBearerToken(
+		final String applicationId,
+		final String applicationSecret,
+		final String authorizationCode,
+		final String redirectUri
+	) throws IOException
+	{
+		return sendRequest(
+			sendPostMessage(
+				UNIVERSE_OAUTH_TOKEN,
+				requestToken(
+					applicationId,
+					applicationSecret,
+					authorizationCode,
+					redirectUri
+				)
+			)
+		);
+	}
+	
+	public List<Buyer> requestBuyersInEvent(String eventId) throws IOException
+	{
+		final GetBuyersRequest getBuyersRequest = new GetBuyersRequest();
+		final String responseAsString = sendRequest(
+			sendPostMessage(
+				UNIVERSE_GRAPHQL_URL,
+				getBuyersRequest.getQuery(eventId),
+				getConfig().getBearerToken()
+			)
+		);
+		final ResponseGetBuyers responseGetBuyers =
+			new ObjectMapper().readValue(responseAsString, getBuyersRequest.getResponseClass());
+		return responseGetBuyers.getData()
+			.getEvent()
+			.getOrders()
+			.getNodes()
+			.stream()
+			.map(node -> node.getBuyer())
+			.collect(Collectors.toList());
+	}
+	
+	private String sendRequest(HttpResponse httpResponse) throws IOException
+	{
+		this.getLogger().debug("StatusCode: " + httpResponse.getStatusLine().getStatusCode());
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity()
 			.getContent(), StandardCharsets.UTF_8)))
 		{
-			return reader.lines().parallel().collect(Collectors.joining("\n"));
+			String responseString = reader.lines().parallel().collect(Collectors.joining("\n"));
+			this.getLogger().debug("ResponseString: " + responseString);
+			return responseString;
 		}
-		//
-		// String schema = "type Query{hello: String}";
-		//
-		// SchemaParser schemaParser = new SchemaParser();
-		// TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schema);
-		//
-		// RuntimeWiring runtimeWiring = newRuntimeWiring()
-		// 	.type("Query", builder -> builder.dataFetcher("hello", new StaticDataFetcher("world")))
-		// 	.build();
-		//
-		// SchemaGenerator schemaGenerator = new SchemaGenerator();
-		// GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, runtimeWiring);
-		//
-		// GraphQL build = GraphQL.newGraphQL(graphQLSchema).build();
-		// ExecutionResult executionResult = build.execute("{hello}");
-		//
-		// return executionResult.getData().toString();
+	}
+	
+	private HttpResponse sendPostMessage(
+		final String urlToCall,
+		final String jsonData,
+		final String bearerToken) throws IOException
+	{
+		HttpClient httpClient = HttpClients.custom()
+			.setDefaultRequestConfig(RequestConfig.custom()
+				.setCookieSpec(CookieSpecs.STANDARD).build())
+			.build();
+		HttpPost con2 = new HttpPost(urlToCall);
+		con2.addHeader(
+			"Authorization",
+			"Bearer " + bearerToken);
+		con2.addHeader("Content-Type", "application/json");
+		con2.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
+		
+		this.getLogger().debug("Request: " + con2);
+		return httpClient.execute(con2);
+	}
+	
+	private HttpResponse sendPostMessage(
+		final String urlToCall,
+		final String jsonData) throws IOException
+	{
+		HttpClient httpClient = HttpClients.custom()
+			.setDefaultRequestConfig(RequestConfig.custom()
+				.setCookieSpec(CookieSpecs.STANDARD).build())
+			.build();
+		HttpPost con2 = new HttpPost(urlToCall);
+		con2.addHeader("Content-Type", "application/json");
+		con2.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
+		
+		this.getLogger().debug("Request: " + con2);
+		return httpClient.execute(con2);
 	}
 }
