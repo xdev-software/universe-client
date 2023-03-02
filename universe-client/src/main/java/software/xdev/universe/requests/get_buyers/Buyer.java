@@ -1,4 +1,4 @@
-package software.xdev.universe.dtos.get_buyers;
+package software.xdev.universe.requests.get_buyers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

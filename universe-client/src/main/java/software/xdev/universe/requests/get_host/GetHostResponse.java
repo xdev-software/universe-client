@@ -1,4 +1,4 @@
-package software.xdev.universe.dtos.get_buyers;
+package software.xdev.universe.requests.get_host;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,13 +15,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
 	"data"
 })
-public class ResponseGetBuyers
+public class GetHostResponse
 {
 	
-	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 	@JsonProperty("data")
 	private Data data;
+	@JsonIgnore
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 	
 	@JsonProperty("data")
 	public Data getData()

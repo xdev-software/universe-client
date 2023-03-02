@@ -33,9 +33,17 @@ import org.apache.http.impl.client.HttpClients;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import software.xdev.universe.dtos.get_buyers.Buyer;
-import software.xdev.universe.dtos.get_buyers.ResponseGetBuyers;
-import software.xdev.universe.requests.GetBuyersRequest;
+import software.xdev.universe.requests.UniverseRequest;
+import software.xdev.universe.requests.get_bearer_token.GetBearerTokenRequest;
+import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
+import software.xdev.universe.requests.get_buyers.Buyer;
+import software.xdev.universe.requests.get_buyers.GetBuyersRequest;
+import software.xdev.universe.requests.get_buyers.GetBuyersResponse;
+import software.xdev.universe.requests.get_events.Event;
+import software.xdev.universe.requests.get_events.GetEventsRequest;
+import software.xdev.universe.requests.get_events.GetEventsResponse;
+import software.xdev.universe.requests.get_host.GetHostRequest;
+import software.xdev.universe.requests.get_host.GetHostResponse;
 
 
 /**
@@ -46,20 +54,8 @@ public class UniverseClient implements HasLogger
 	public static final String UNIVERSE_GRAPHQL_URL = "https://www.universe.com/graphql";
 	public static final String UNIVERSE_OAUTH_TOKEN = "https://www.universe.com/oauth/token";
 	public static final String UNIVERSE_OAUTH_AUTHORIZE_URL = "https://www.universe.com/oauth/authorize";
-	
+	private final ObjectMapper objectMapper = new ObjectMapper();
 	private UniverseConfiguration config = new UniverseConfiguration();
-	
-	private static final String requestToken(
-		final String applicationId,
-		final String applicationSecret,
-		final String authorizationCode,
-		final String redirectUri)
-	{
-		return "{ \"grant_type\": \"authorization_code\", \"client_id\":\"" + applicationId + "\", \"client_secret"
-			+ "\":\""
-			+ applicationSecret + "\", \"redirect_uri\":\"" + redirectUri + "\", \"code\":\"" + authorizationCode
-			+ "\"}";
-	}
 	
 	public UniverseClient withConfig(UniverseConfiguration config)
 	{
@@ -74,7 +70,7 @@ public class UniverseClient implements HasLogger
 	
 	/**
 	 * After authorization on the returned URL, the authorization code is displayed. We need this code to call
-	 * {@link #getBearerToken()}.
+	 * {@link #requestBearerToken()}.
 	 *
 	 * @return a url to call to get the {@link UniverseConfiguration#getAuthorizationCode()}
 	 */
@@ -88,7 +84,7 @@ public class UniverseClient implements HasLogger
 	
 	/**
 	 * After authorization on the returned URL, the authorization code is displayed. We need this code to call
-	 * {@link #getBearerToken()}.
+	 * {@link #requestBearerToken()}.
 	 *
 	 * @return a url to call to get the {@link UniverseConfiguration#getAuthorizationCode()}
 	 */
@@ -104,9 +100,9 @@ public class UniverseClient implements HasLogger
 			+ "&redirect_uri=" + redirectUri;
 	}
 	
-	public String getBearerToken() throws IOException
+	public String requestBearerToken() throws IOException
 	{
-		return getBearerToken(
+		return requestBearerToken(
 			getConfig().getApplicationId(),
 			getConfig().getApplicationSecret(),
 			getConfig().getAuthorizationCode(),
@@ -114,38 +110,42 @@ public class UniverseClient implements HasLogger
 		);
 	}
 	
-	public String getBearerToken(
+	public String requestBearerToken(
 		final String applicationId,
 		final String applicationSecret,
 		final String authorizationCode,
 		final String redirectUri
 	) throws IOException
 	{
-		return sendRequest(
-			sendPostMessage(
-				UNIVERSE_OAUTH_TOKEN,
-				requestToken(
-					applicationId,
-					applicationSecret,
-					authorizationCode,
-					redirectUri
+		final GetBearerTokenRequest getBearerTokenRequest = new GetBearerTokenRequest();
+		final GetBearerTokenResponse responseGetBearerToken =
+			sendRequestAndParseResponse(
+				getBearerTokenRequest,
+				sendPostMessage(
+					UNIVERSE_OAUTH_TOKEN,
+					getBearerTokenRequest.getQuery(
+						applicationId,
+						applicationSecret,
+						authorizationCode,
+						redirectUri
+					)
 				)
-			)
-		);
+			);
+		return responseGetBearerToken.getAccessToken();
 	}
 	
 	public List<Buyer> requestBuyersInEvent(String eventId) throws IOException
 	{
 		final GetBuyersRequest getBuyersRequest = new GetBuyersRequest();
-		final String responseAsString = sendRequest(
-			sendPostMessage(
-				UNIVERSE_GRAPHQL_URL,
-				getBuyersRequest.getQuery(eventId),
-				getConfig().getBearerToken()
-			)
-		);
-		final ResponseGetBuyers responseGetBuyers =
-			new ObjectMapper().readValue(responseAsString, getBuyersRequest.getResponseClass());
+		final GetBuyersResponse responseGetBuyers =
+			sendRequestAndParseResponse(
+				getBuyersRequest,
+				sendPostMessage(
+					UNIVERSE_GRAPHQL_URL,
+					getBuyersRequest.getQuery(eventId),
+					getConfig().getBearerToken()
+				)
+			);
 		return responseGetBuyers.getData()
 			.getEvent()
 			.getOrders()
@@ -153,6 +153,44 @@ public class UniverseClient implements HasLogger
 			.stream()
 			.map(node -> node.getBuyer())
 			.collect(Collectors.toList());
+	}
+	
+	public String requestHostId() throws IOException
+	{
+		final GetHostRequest getHostRequest = new GetHostRequest();
+		final GetHostResponse getHostResponse =
+			sendRequestAndParseResponse(
+				getHostRequest,
+				sendPostMessage(
+					UNIVERSE_GRAPHQL_URL,
+					getHostRequest.getQuery(),
+					getConfig().getBearerToken()
+				)
+			);
+		return getHostResponse.getData().getViewer().getId();
+	}
+	
+	public List<Event> requestEvents(String hostId) throws IOException
+	{
+		final GetEventsRequest getEventsRequest = new GetEventsRequest();
+		final GetEventsResponse getEventsResponse =
+			sendRequestAndParseResponse(
+				getEventsRequest,
+				sendPostMessage(
+					UNIVERSE_GRAPHQL_URL,
+					getEventsRequest.getQuery(hostId),
+					getConfig().getBearerToken()
+				)
+			);
+		return getEventsResponse.getData().getHost().getEvents().getNodes();
+	}
+	
+	private <T> T sendRequestAndParseResponse(
+		UniverseRequest<T> request,
+		HttpResponse httpResponse) throws IOException
+	{
+		final String responseAsString = sendRequest(httpResponse);
+		return objectMapper.readValue(responseAsString, request.getResponseClass());
 	}
 	
 	private String sendRequest(HttpResponse httpResponse) throws IOException

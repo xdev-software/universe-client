@@ -1,7 +1,6 @@
-package software.xdev.universe.dtos.get_buyers;
+package software.xdev.universe.requests.get_host;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -14,26 +13,55 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-	"nodes"
+	"id",
+	"firstName",
+	"lastName"
 })
-public class Orders
+public class Viewer
 {
-	
 	@JsonIgnore
 	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
-	@JsonProperty("nodes")
-	private List<Node> nodes;
+	@JsonProperty("id")
+	private String id;
+	@JsonProperty("firstName")
+	private String firstName;
+	@JsonProperty("lastName")
+	private Object lastName;
 	
-	@JsonProperty("nodes")
-	public List<Node> getNodes()
+	@JsonProperty("id")
+	public String getId()
 	{
-		return nodes;
+		return id;
 	}
 	
-	@JsonProperty("nodes")
-	public void setNodes(List<Node> nodes)
+	@JsonProperty("id")
+	public void setId(String id)
 	{
-		this.nodes = nodes;
+		this.id = id;
+	}
+	
+	@JsonProperty("firstName")
+	public String getFirstName()
+	{
+		return firstName;
+	}
+	
+	@JsonProperty("firstName")
+	public void setFirstName(String firstName)
+	{
+		this.firstName = firstName;
+	}
+	
+	@JsonProperty("lastName")
+	public Object getLastName()
+	{
+		return lastName;
+	}
+	
+	@JsonProperty("lastName")
+	public void setLastName(Object lastName)
+	{
+		this.lastName = lastName;
 	}
 	
 	@JsonAnyGetter

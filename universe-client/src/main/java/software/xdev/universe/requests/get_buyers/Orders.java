@@ -1,6 +1,7 @@
-package software.xdev.universe.dtos.get_buyers;
+package software.xdev.universe.requests.get_buyers;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -13,26 +14,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-	"orders"
+	"nodes"
 })
-public class Event
+public class Orders
 {
 	
 	@JsonIgnore
 	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
-	@JsonProperty("orders")
-	private Orders orders;
+	@JsonProperty("nodes")
+	private List<Node> nodes;
 	
-	@JsonProperty("orders")
-	public Orders getOrders()
+	@JsonProperty("nodes")
+	public List<Node> getNodes()
 	{
-		return orders;
+		return nodes;
 	}
 	
-	@JsonProperty("orders")
-	public void setOrders(Orders orders)
+	@JsonProperty("nodes")
+	public void setNodes(List<Node> nodes)
 	{
-		this.orders = orders;
+		this.nodes = nodes;
 	}
 	
 	@JsonAnyGetter
