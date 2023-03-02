@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import software.xdev.universe.UniverseClient;
+import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
 import software.xdev.universe.requests.get_buyers.Buyer;
 import software.xdev.universe.requests.get_events.Event;
 
@@ -25,12 +27,14 @@ public class Demo
 		// STEP 1: Get Authorization Code
 		// After getting the authorization code it must be set in the microprofile-config.properties
 		// or through client.getConfig().withAuthorizationCode()
-		openBrowserToGetAuthorizationCode();
+		final String authorizationCode = openBrowserToGetAuthorizationCodeAndWaitForInput();
+		client.getConfig().withAuthorizationCode(authorizationCode);
 		
 		// STEP 2: Get Bearer Token
 		// After getting the bearer token it must be set in the microprofile-config.properties
 		// or through client.getConfig().withBearerToken()
-		final String bearerToken = client.requestBearerToken();
+		final GetBearerTokenResponse bearerToken = client.requestBearerToken();
+		client.getConfig().withBearerToken(bearerToken.getAccessToken());
 		
 		// STEP 3: Get Host Id
 		final String hostId = client.requestHostId();
@@ -40,16 +44,21 @@ public class Demo
 		events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
 		
 		// STEP 5: Get Buyers
-		final List<Buyer> buyers = client.requestBuyersInEvent(events.get(0).getId());
+		final List<Buyer> buyers = client.requestBuyersInEvent(events.get(0).getId(), 50, 100);
 		buyers.forEach(buyer -> logger.info("Buyer: " + buyer.getName()));
 	}
 	
-	private static void openBrowserToGetAuthorizationCode() throws URISyntaxException, IOException
+	private static String openBrowserToGetAuthorizationCodeAndWaitForInput() throws URISyntaxException, IOException
 	{
 		final UniverseClient client = new UniverseClient();
 		if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
 		{
 			Desktop.getDesktop().browse(new URI(client.getUrlToGetAuthorizationCode()));
+		}
+		try(Scanner scanner = new Scanner(System.in))
+		{
+			System.out.println("Please input displayed authorization code:");
+			return scanner.nextLine();
 		}
 	}
 }

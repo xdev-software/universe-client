@@ -100,7 +100,7 @@ public class UniverseClient implements HasLogger
 			+ "&redirect_uri=" + redirectUri;
 	}
 	
-	public String requestBearerToken() throws IOException
+	public GetBearerTokenResponse requestBearerToken() throws IOException
 	{
 		return requestBearerToken(
 			getConfig().getApplicationId(),
@@ -110,7 +110,7 @@ public class UniverseClient implements HasLogger
 		);
 	}
 	
-	public String requestBearerToken(
+	public GetBearerTokenResponse requestBearerToken(
 		final String applicationId,
 		final String applicationSecret,
 		final String authorizationCode,
@@ -131,10 +131,23 @@ public class UniverseClient implements HasLogger
 					)
 				)
 			);
-		return responseGetBearerToken.getAccessToken();
+		return responseGetBearerToken;
 	}
 	
+	/**
+	 * @param eventId to get the events from
+	 */
 	public List<Buyer> requestBuyersInEvent(String eventId) throws IOException
+	{
+		return requestBuyersInEvent(eventId, 0, 0);
+	}
+	
+	/**
+	 * @param eventId to get the events from
+	 * @param limit   0 is unlimited, 50 is max amount. Default is 0
+	 * @param offset  Default is 0
+	 */
+	public List<Buyer> requestBuyersInEvent(String eventId, int limit, int offset) throws IOException
 	{
 		final GetBuyersRequest getBuyersRequest = new GetBuyersRequest();
 		final GetBuyersResponse responseGetBuyers =
@@ -142,7 +155,7 @@ public class UniverseClient implements HasLogger
 				getBuyersRequest,
 				sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
-					getBuyersRequest.getQuery(eventId),
+					getBuyersRequest.getQuery(eventId, limit, offset),
 					getConfig().getBearerToken()
 				)
 			);
@@ -178,7 +191,7 @@ public class UniverseClient implements HasLogger
 				getEventsRequest,
 				sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
-					getEventsRequest.getQuery(hostId),
+					getEventsRequest.getQuery(hostId, 0),
 					getConfig().getBearerToken()
 				)
 			);

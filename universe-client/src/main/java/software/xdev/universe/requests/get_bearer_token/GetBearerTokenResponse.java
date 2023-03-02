@@ -1,5 +1,6 @@
 package software.xdev.universe.requests.get_bearer_token;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GetBearerTokenResponse
 {
 	
+	@JsonIgnore
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 	@JsonProperty("access_token")
 	private String accessToken;
 	@JsonProperty("token_type")
@@ -35,8 +38,6 @@ public class GetBearerTokenResponse
 	private String scope;
 	@JsonProperty("created_at")
 	private Integer createdAt;
-	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 	
 	@JsonProperty("access_token")
 	public String getAccessToken()
@@ -62,6 +63,9 @@ public class GetBearerTokenResponse
 		this.tokenType = tokenType;
 	}
 	
+	/**
+	 * @return number of seconds to expiration
+	 */
 	@JsonProperty("expires_in")
 	public Integer getExpiresIn()
 	{
@@ -72,6 +76,11 @@ public class GetBearerTokenResponse
 	public void setExpiresIn(Integer expiresIn)
 	{
 		this.expiresIn = expiresIn;
+	}
+	
+	public Duration getExpiresInAsDuration()
+	{
+		return Duration.ofSeconds(getExpiresIn());
 	}
 	
 	@JsonProperty("refresh_token")

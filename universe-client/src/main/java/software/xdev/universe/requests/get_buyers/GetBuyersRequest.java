@@ -11,10 +11,10 @@ public class GetBuyersRequest implements UniverseRequest<GetBuyersResponse>
 		return GetBuyersResponse.class;
 	}
 	
-	public final String getQuery(String eventId)
+	public final String getQuery(String eventId, int limit, int offset)
 	{
 		return "{ \"query\": \"{ event(id: \\\"" + eventId + "\\\") { orders { "
-			+ "nodes(limit: 0) {"
+			+ "nodes(limit: " + limit + " offset: " + offset + ") {"
 			+ "        buyer {"
 			+ "          id"
 			+ "          name"
