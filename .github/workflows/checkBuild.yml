@@ -54,10 +54,3 @@ jobs:
           echo "::error::Unstaged changes detected. Locally try running: git clean -ffdx && mvn -B clean package -Pproduction"
           exit 1
         fi
-
-    - name: Upload demo files
-      uses: actions/upload-artifact@v3
-      with:
-        name: demo-files-java-${{ matrix.java }}
-        path: ${{ env.DEMO_MAVEN_MODULE }}/target/${{ env.DEMO_MAVEN_MODULE }}.jar
-        if-no-files-found: error
