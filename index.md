@@ -25,6 +25,25 @@ client.getAlluniverseSessions().forEach(
 );
 ```
 
+## GraphQL
+We are using the [Universe GraphQL API](https://developers.universe.com/docs/graphql).
+Here are some thing to help with orientation with GraphQL.
+
+You can test requests on [Universes GraphiQL (Explorer)](https://www.universe.com/graphiql);
+
+Get Schema:
+```
+{
+  __schema {
+    queryType {
+      fields {
+        name
+      }
+    }
+  }
+}
+```
+
 ## Installation
 
 [Installation guide for the latest release](https://github.com/xdev-software/universe-client/releases/latest#Installation)
