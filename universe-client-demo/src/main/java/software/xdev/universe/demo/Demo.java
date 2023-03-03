@@ -54,7 +54,7 @@ public class Demo
 		attendees.forEach(attendee ->
 			logger.info(
 				"Attendee: "
-					+ "\n     Name:" + attendee.getTypedAnswerToQuestion(DefaultQuestions.FIRST_NAME)
+					+ "\n     Name: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.FIRST_NAME)
 					+ " " + attendee.getTypedAnswerToQuestion(DefaultQuestions.LAST_NAME)
 					+ "\n    Email: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.EMAIL)
 					+ "\n  Company: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.COMPANY)
