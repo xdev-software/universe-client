@@ -11,6 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import software.xdev.universe.UniverseClient;
+import software.xdev.universe.requests.get_attendees.Attendee;
+import software.xdev.universe.requests.get_attendees.DefaultQuestions;
 import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
 import software.xdev.universe.requests.get_buyers.Buyer;
 import software.xdev.universe.requests.get_events.Event;
@@ -44,8 +46,22 @@ public class Demo
 		events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
 		
 		// STEP 5: Get Buyers
-		final List<Buyer> buyers = client.requestBuyersInEvent(events.get(0).getId(), 50, 100);
+		final List<Buyer> buyers = client.requestBuyersInEvent(events.get(0).getId(), 5, 0);
 		buyers.forEach(buyer -> logger.info("Buyer: " + buyer.getName()));
+		
+		// STEP 6: Get Attendees
+		final List<Attendee> attendees = client.requestAttendeesInEvent("63d23a98cf489d0021b396b3", 5, 0);
+		attendees.forEach(attendee ->
+			logger.info(
+				"Attendee: "
+					+ "\n     Name:" + attendee.getTypedAnswerToQuestion(DefaultQuestions.FIRST_NAME)
+					+ " " + attendee.getTypedAnswerToQuestion(DefaultQuestions.LAST_NAME)
+					+ "\n    Email: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.EMAIL)
+					+ "\n  Company: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.COMPANY)
+					+ "\n      Job: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.JOB_TITLE)
+					+ "\n  Country: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.COUNTRY)
+			)
+		);
 	}
 	
 	private static String openBrowserToGetAuthorizationCodeAndWaitForInput() throws URISyntaxException, IOException

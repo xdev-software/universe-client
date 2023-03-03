@@ -34,6 +34,9 @@ import org.apache.http.impl.client.HttpClients;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.xdev.universe.requests.UniverseRequest;
+import software.xdev.universe.requests.get_attendees.Attendee;
+import software.xdev.universe.requests.get_attendees.GetAttendeesRequest;
+import software.xdev.universe.requests.get_attendees.GetAttendeesResponse;
 import software.xdev.universe.requests.get_bearer_token.GetBearerTokenRequest;
 import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
 import software.xdev.universe.requests.get_buyers.Buyer;
@@ -166,6 +169,36 @@ public class UniverseClient implements HasLogger
 			.stream()
 			.map(node -> node.getBuyer())
 			.collect(Collectors.toList());
+	}
+	
+	/**
+	 * @param eventId to get the events from
+	 */
+	public List<Attendee> requestAttendeesInEvent(String eventId) throws IOException
+	{
+		return requestAttendeesInEvent(eventId, 0, 0);
+	}
+	
+	/**
+	 * @param eventId to get the events from
+	 * @param limit   0 is unlimited, 50 is max amount. Default is 0
+	 * @param offset  Default is 0
+	 */
+	public List<Attendee> requestAttendeesInEvent(String eventId, int limit, int offset) throws IOException
+	{
+		final GetAttendeesRequest getBuyersRequest = new GetAttendeesRequest();
+		final GetAttendeesResponse responseGetBuyers =
+			sendRequestAndParseResponse(
+				getBuyersRequest,
+				sendPostMessage(
+					UNIVERSE_GRAPHQL_URL,
+					getBuyersRequest.getQuery(eventId, limit, offset),
+					getConfig().getBearerToken()
+				)
+			);
+		return responseGetBuyers.getData()
+			.getEvent()
+			.getAttendees().getNodes();
 	}
 	
 	public String requestHostId() throws IOException
