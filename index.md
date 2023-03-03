@@ -1,28 +1,40 @@
-[![Latest version](https://img.shields.io/maven-central/v/com.xdev-software/universe-client)](https://mvnrepository.com/artifact/com.xdev-software/universe-client)
+[![Latest version](https://img.shields.io/maven-central/v/software.xdev/universe-client)](https://mvnrepository.com/artifact/software.xdev/universe-client)
 [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/universe-client/checkBuild.yml?branch=develop)](https://github.com/xdev-software/universe-client/actions/workflows/checkBuild.yml?query=branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_universe-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_universe-client)
 
-# universe client for java
+# Universe client for Java
 
 A simple Java API for easy usage of [universe](https://universe.com/).
 Here is the [documentation of the actual universe API](https://universe.com/api).
 
 ## Usage
 
-You can set the **API-Key** and the **API-URL** through the ``microprofile-config.properties`` (
-See [microprofile-config-template.properties](universe-client-demo/src/main/resources/META-INF/microprofile-config-template.properties))
-or with ``#withApiKey`` and ``#withUrl`` (
-see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
+Before you can start, there are a few config-entries that must be set.
+They can get configured through the ``microprofile-config.properties`` (see [microprofile-config-template.properties](universe-client-demo/src/main/resources/META-INF/microprofile-config-template.properties)))
+or through the UniverseConfiguration with ``client.getConfig().with...`` (see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
+
+The two basic entries are the ``ApplicationId`` and the ``RedirectUri``. They **must** be set.
+
+If these two entries are set, you need to get ``AuthorizationCode``. This is a one-time-only code, which
+you get by calling the URL provided by ``client.getUrlToGetAuthorizationCode()``.
+
+With this ``AuthorizationCode`` you can request a ``BearerToken``. You can can request the ``BearerToken`` only 
+one time with one ``AuthorizationCode``. After that the ``AuthorizationCode`` is invalidated.
+This can be achieved with ``client.requestBearerToken()``.
+The ``BearerToken`` can be used for all your future requests. It is usually valid for one month.
+
+If the ``BearerToken`` is set, you can use the actual API calls.
 
 ### Example
+Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
 
 ```java
-final universeClient client = new universeClient()
-	.withApiKey("TEST-API")
-	.withUri("https://your_conference.universe.com/api");
-client.getAlluniverseSessions().forEach(
-	session->logger.info(session.getSpeakers()+" - "+session.getName())
-);
+final UniverseClient client = new UniverseClient();
+// Get Events
+final List<Event> events = client.requestEvents(hostId);
+events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
+// Get Attendees
+final List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
 ```
 
 ## GraphQL
