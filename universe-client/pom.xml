@@ -6,7 +6,7 @@
 
     <groupId>software.xdev</groupId>
     <artifactId>universe-client</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Universe API for Java</name>
@@ -92,12 +92,10 @@
         </dependency>
 
         <!-- Saves sensible Data in a .properties file and provides the data only during runtime -->
-        <!-- https://mvnrepository.com/artifact/org.eclipse.microprofile/microprofile -->
         <dependency>
-            <groupId>org.eclipse.microprofile</groupId>
-            <artifactId>microprofile</artifactId>
-            <version>6.0</version>
-            <type>pom</type>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <version>3.0.2</version>
         </dependency>
 
         <dependency>
