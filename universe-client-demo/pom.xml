@@ -37,7 +37,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.xdev-software</groupId>
+            <groupId>software.xdev</groupId>
             <artifactId>universe-client</artifactId>
             <version>${project.version}</version>
         </dependency>
