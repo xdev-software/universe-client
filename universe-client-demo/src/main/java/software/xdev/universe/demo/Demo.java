@@ -50,7 +50,7 @@ public class Demo
 		buyers.forEach(buyer -> logger.info("Buyer: " + buyer.getName()));
 		
 		// STEP 6: Get Attendees
-		final List<Attendee> attendees = client.requestAttendeesInEvent("63d23a98cf489d0021b396b3", 5, 0);
+		final List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
 		attendees.forEach(attendee ->
 			logger.info(
 				"Attendee: "
