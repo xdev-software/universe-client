@@ -2,7 +2,7 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/universe-client/checkBuild.yml?branch=develop)](https://github.com/xdev-software/universe-client/actions/workflows/checkBuild.yml?query=branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_universe-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_universe-client)
 
-# universe client for java
+# Universe client for Java
 
 A simple Java API for easy usage of [universe](https://universe.com/).
 Here is the [documentation of the actual universe API](https://universe.com/api).
