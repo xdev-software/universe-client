@@ -5,7 +5,7 @@
 # Universe client for Java
 
 A simple Java API for easy usage of [universe](https://universe.com/).
-Here is the [documentation of the actual universe API](https://universe.com/api).
+Here is the [documentation of the actual universe API](https://developers.universe.com/).
 
 ## Usage
 
@@ -26,7 +26,7 @@ The ``BearerToken`` can be used for all your future requests. It is usually vali
 If the ``BearerToken`` is set, you can use the actual API calls.
 
 ### Example
-Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
+Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java).
 
 ```java
 final UniverseClient client = new UniverseClient();
