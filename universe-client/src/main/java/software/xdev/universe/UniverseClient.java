@@ -18,6 +18,7 @@ package software.xdev.universe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
 import software.xdev.universe.requests.get_buyers.Buyer;
 import software.xdev.universe.requests.get_buyers.GetBuyersRequest;
 import software.xdev.universe.requests.get_buyers.GetBuyersResponse;
+import software.xdev.universe.requests.get_buyers.Node;
 import software.xdev.universe.requests.get_events.Event;
 import software.xdev.universe.requests.get_events.GetEventsRequest;
 import software.xdev.universe.requests.get_events.GetEventsResponse;
@@ -50,25 +52,43 @@ import software.xdev.universe.requests.get_host.GetHostResponse;
 
 
 /**
- * Client to communicate with the sessionize API.
+ * Client to communicate with the universe API.
  */
-public class UniverseClient implements HasLogger
+public class UniverseClient
 {
 	public static final String UNIVERSE_GRAPHQL_URL = "https://www.universe.com/graphql";
 	public static final String UNIVERSE_OAUTH_TOKEN = "https://www.universe.com/oauth/token";
 	public static final String UNIVERSE_OAUTH_AUTHORIZE_URL = "https://www.universe.com/oauth/authorize";
-	private final ObjectMapper objectMapper = new ObjectMapper();
-	private UniverseConfiguration config = new UniverseConfiguration();
 	
-	public UniverseClient withConfig(UniverseConfiguration config)
+	protected final ObjectMapper objectMapper = new ObjectMapper();
+	
+	protected String applicationId;
+	protected String applicationSecret;
+	protected String redirectUri;
+	
+	protected String authorizationCode;
+	
+	protected String bearerToken;
+	
+	public UniverseClient(final UniverseConfiguration config)
 	{
-		this.config = config;
+		this.applicationId = config.applicationId();
+		this.applicationSecret = config.applicationSecret();
+		this.redirectUri = config.redirectUri();
+		this.authorizationCode = config.authorizationCode();
+		this.bearerToken = config.bearerToken();
+	}
+	
+	public UniverseClient withAuthorizationCode(final String authorizationCode)
+	{
+		this.authorizationCode = authorizationCode;
 		return this;
 	}
 	
-	public UniverseConfiguration getConfig()
+	public UniverseClient withBearerToken(final String bearerToken)
 	{
-		return this.config;
+		this.bearerToken = bearerToken;
+		return this;
 	}
 	
 	/**
@@ -79,9 +99,9 @@ public class UniverseClient implements HasLogger
 	 */
 	public String getUrlToGetAuthorizationCode()
 	{
-		return getUrlToGetAuthorizationCode(
-			getConfig().getApplicationId(),
-			getConfig().getRedirectUri()
+		return this.getUrlToGetAuthorizationCode(
+			this.applicationId,
+			this.redirectUri
 		);
 	}
 	
@@ -93,23 +113,22 @@ public class UniverseClient implements HasLogger
 	 */
 	public String getUrlToGetAuthorizationCode(
 		final String applicationId,
-		final String redirectUri
-	)
+		final String redirectUri)
 	{
-		return UNIVERSE_OAUTH_AUTHORIZE_URL + "?"
-			+ "response_type=code&"
-			+ "scope=public&"
-			+ "client_id=" + applicationId
+		return UNIVERSE_OAUTH_AUTHORIZE_URL
+			+ "?response_type=code"
+			+ "&scope=public"
+			+ "&client_id=" + applicationId
 			+ "&redirect_uri=" + redirectUri;
 	}
 	
-	public GetBearerTokenResponse requestBearerToken() throws IOException
+	public GetBearerTokenResponse requestBearerToken()
 	{
-		return requestBearerToken(
-			getConfig().getApplicationId(),
-			getConfig().getApplicationSecret(),
-			getConfig().getAuthorizationCode(),
-			getConfig().getRedirectUri()
+		return this.requestBearerToken(
+			this.applicationId,
+			this.applicationSecret,
+			this.authorizationCode,
+			this.redirectUri
 		);
 	}
 	
@@ -117,14 +136,12 @@ public class UniverseClient implements HasLogger
 		final String applicationId,
 		final String applicationSecret,
 		final String authorizationCode,
-		final String redirectUri
-	) throws IOException
+		final String redirectUri)
 	{
 		final GetBearerTokenRequest getBearerTokenRequest = new GetBearerTokenRequest();
-		final GetBearerTokenResponse responseGetBearerToken =
-			sendRequestAndParseResponse(
+		return this.sendRequestAndParseResponse(
 				getBearerTokenRequest,
-				sendPostMessage(
+			this.sendPostMessage(
 					UNIVERSE_OAUTH_TOKEN,
 					getBearerTokenRequest.getQuery(
 						applicationId,
@@ -134,15 +151,14 @@ public class UniverseClient implements HasLogger
 					)
 				)
 			);
-		return responseGetBearerToken;
 	}
 	
 	/**
 	 * @param eventId to get the events from
 	 */
-	public List<Buyer> requestBuyersInEvent(String eventId) throws IOException
+	public List<Buyer> requestBuyersInEvent(final String eventId)
 	{
-		return requestBuyersInEvent(eventId, 0, 0);
+		return this.requestBuyersInEvent(eventId, 0, 0);
 	}
 	
 	/**
@@ -150,16 +166,16 @@ public class UniverseClient implements HasLogger
 	 * @param limit   0 is unlimited, 50 is max amount. Default is 0
 	 * @param offset  Default is 0
 	 */
-	public List<Buyer> requestBuyersInEvent(String eventId, int limit, int offset) throws IOException
+	public List<Buyer> requestBuyersInEvent(final String eventId, final int limit, final int offset)
 	{
 		final GetBuyersRequest getBuyersRequest = new GetBuyersRequest();
 		final GetBuyersResponse responseGetBuyers =
-			sendRequestAndParseResponse(
+			this.sendRequestAndParseResponse(
 				getBuyersRequest,
-				sendPostMessage(
+				this.sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
 					getBuyersRequest.getQuery(eventId, limit, offset),
-					getConfig().getBearerToken()
+					this.bearerToken
 				)
 			);
 		return responseGetBuyers.getData()
@@ -167,16 +183,16 @@ public class UniverseClient implements HasLogger
 			.getOrders()
 			.getNodes()
 			.stream()
-			.map(node -> node.getBuyer())
+			.map(Node::getBuyer)
 			.collect(Collectors.toList());
 	}
 	
 	/**
 	 * @param eventId to get the events from
 	 */
-	public List<Attendee> requestAttendeesInEvent(String eventId) throws IOException
+	public List<Attendee> requestAttendeesInEvent(final String eventId)
 	{
-		return requestAttendeesInEvent(eventId, 0, 0);
+		return this.requestAttendeesInEvent(eventId, 0, 0);
 	}
 	
 	/**
@@ -184,16 +200,16 @@ public class UniverseClient implements HasLogger
 	 * @param limit   0 is unlimited, 50 is max amount. Default is 0
 	 * @param offset  Default is 0
 	 */
-	public List<Attendee> requestAttendeesInEvent(String eventId, int limit, int offset) throws IOException
+	public List<Attendee> requestAttendeesInEvent(final String eventId, final int limit, final int offset)
 	{
 		final GetAttendeesRequest getBuyersRequest = new GetAttendeesRequest();
 		final GetAttendeesResponse responseGetBuyers =
-			sendRequestAndParseResponse(
+			this.sendRequestAndParseResponse(
 				getBuyersRequest,
-				sendPostMessage(
+				this.sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
 					getBuyersRequest.getQuery(eventId, limit, offset),
-					getConfig().getBearerToken()
+					this.bearerToken
 				)
 			);
 		return responseGetBuyers.getData()
@@ -201,89 +217,103 @@ public class UniverseClient implements HasLogger
 			.getAttendees().getNodes();
 	}
 	
-	public String requestHostId() throws IOException
+	public String requestHostId()
 	{
 		final GetHostRequest getHostRequest = new GetHostRequest();
 		final GetHostResponse getHostResponse =
-			sendRequestAndParseResponse(
+			this.sendRequestAndParseResponse(
 				getHostRequest,
-				sendPostMessage(
+				this.sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
 					getHostRequest.getQuery(),
-					getConfig().getBearerToken()
+					this.bearerToken
 				)
 			);
 		return getHostResponse.getData().getViewer().getId();
 	}
 	
-	public List<Event> requestEvents(String hostId) throws IOException
+	public List<Event> requestEvents(final String hostId)
 	{
 		final GetEventsRequest getEventsRequest = new GetEventsRequest();
 		final GetEventsResponse getEventsResponse =
-			sendRequestAndParseResponse(
+			this.sendRequestAndParseResponse(
 				getEventsRequest,
-				sendPostMessage(
+				this.sendPostMessage(
 					UNIVERSE_GRAPHQL_URL,
 					getEventsRequest.getQuery(hostId, 0),
-					getConfig().getBearerToken()
+					this.bearerToken
 				)
 			);
 		return getEventsResponse.getData().getHost().getEvents().getNodes();
 	}
 	
 	private <T> T sendRequestAndParseResponse(
-		UniverseRequest<T> request,
-		HttpResponse httpResponse) throws IOException
+		final UniverseRequest<T> request,
+		final HttpResponse httpResponse)
 	{
-		final String responseAsString = sendRequest(httpResponse);
-		return objectMapper.readValue(responseAsString, request.getResponseClass());
+		try
+		{
+			final String responseAsString = this.sendRequest(httpResponse);
+			return this.objectMapper.readValue(responseAsString, request.getResponseClass());
+		}
+		catch(final IOException ioe)
+		{
+			throw new UncheckedIOException(ioe);
+		}
 	}
 	
-	private String sendRequest(HttpResponse httpResponse) throws IOException
+	private String sendRequest(final HttpResponse httpResponse) throws IOException
 	{
-		this.getLogger().debug("StatusCode: " + httpResponse.getStatusLine().getStatusCode());
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity()
+		try(final BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity()
 			.getContent(), StandardCharsets.UTF_8)))
 		{
-			String responseString = reader.lines().parallel().collect(Collectors.joining("\n"));
-			this.getLogger().debug("ResponseString: " + responseString);
-			return responseString;
+			return reader.lines().collect(Collectors.joining("\n"));
 		}
 	}
 	
 	private HttpResponse sendPostMessage(
 		final String urlToCall,
 		final String jsonData,
-		final String bearerToken) throws IOException
+		final String bearerToken)
 	{
-		HttpClient httpClient = HttpClients.custom()
+		final HttpClient httpClient = HttpClients.custom()
 			.setDefaultRequestConfig(RequestConfig.custom()
 				.setCookieSpec(CookieSpecs.STANDARD).build())
 			.build();
-		HttpPost con2 = new HttpPost(urlToCall);
-		con2.addHeader(
-			"Authorization",
-			"Bearer " + bearerToken);
-		con2.addHeader("Content-Type", "application/json");
-		con2.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
+		final HttpPost post = new HttpPost(urlToCall);
+		post.addHeader("Authorization", "Bearer " + bearerToken);
+		post.addHeader("Content-Type", "application/json");
+		post.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
 		
-		this.getLogger().debug("Request: " + con2);
-		return httpClient.execute(con2);
+		try
+		{
+			return httpClient.execute(post);
+		}
+		catch(final IOException ioe)
+		{
+			throw new UncheckedIOException(ioe);
+		}
 	}
 	
 	private HttpResponse sendPostMessage(
 		final String urlToCall,
-		final String jsonData) throws IOException
+		final String jsonData)
 	{
-		HttpClient httpClient = HttpClients.custom()
+		final HttpClient httpClient = HttpClients.custom()
 			.setDefaultRequestConfig(RequestConfig.custom()
 				.setCookieSpec(CookieSpecs.STANDARD).build())
 			.build();
-		HttpPost con2 = new HttpPost(urlToCall);
-		con2.addHeader("Content-Type", "application/json");
-		con2.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
+		final HttpPost post = new HttpPost(urlToCall);
+		post.addHeader("Content-Type", "application/json");
+		post.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
 		
-		this.getLogger().debug("Request: " + con2);
-		return httpClient.execute(con2);
+		try
+		{
+			return httpClient.execute(post);
+		}
+		catch(final IOException e)
+		{
+			throw new UncheckedIOException(e);
+		}
 	}
 }
