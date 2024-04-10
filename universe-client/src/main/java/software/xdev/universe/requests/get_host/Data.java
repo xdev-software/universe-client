@@ -34,18 +34,18 @@ public class Data
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("viewer")
 	private Viewer viewer;
 	
 	@JsonProperty("viewer")
 	public Viewer getViewer()
 	{
-		return viewer;
+		return this.viewer;
 	}
 	
 	@JsonProperty("viewer")
-	public void setViewer(Viewer viewer)
+	public void setViewer(final Viewer viewer)
 	{
 		this.viewer = viewer;
 	}
@@ -57,7 +57,7 @@ public class Data
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

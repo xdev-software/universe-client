@@ -33,18 +33,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GetEventsResponse
 {
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("data")
 	private Data data;
 	
 	@JsonProperty("data")
 	public Data getData()
 	{
-		return data;
+		return this.data;
 	}
 	
 	@JsonProperty("data")
-	public void setData(Data data)
+	public void setData(final Data data)
 	{
 		this.data = data;
 	}
@@ -56,7 +56,7 @@ public class GetEventsResponse
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

@@ -36,16 +36,16 @@ public class Event
 	@JsonProperty("attendees")
 	private Attendees attendees;
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	
 	@JsonProperty("attendees")
 	public Attendees getAttendees()
 	{
-		return attendees;
+		return this.attendees;
 	}
 	
 	@JsonProperty("attendees")
-	public void setAttendees(Attendees attendees)
+	public void setAttendees(final Attendees  attendees)
 	{
 		this.attendees = attendees;
 	}
@@ -57,7 +57,7 @@ public class Event
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

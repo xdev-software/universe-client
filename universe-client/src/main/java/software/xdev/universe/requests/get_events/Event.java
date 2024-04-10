@@ -37,7 +37,7 @@ public class Event
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("title")
@@ -50,11 +50,11 @@ public class Event
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -62,11 +62,11 @@ public class Event
 	@JsonProperty("title")
 	public String getTitle()
 	{
-		return title;
+		return this.title;
 	}
 	
 	@JsonProperty("title")
-	public void setTitle(String title)
+	public void setTitle(final String title)
 	{
 		this.title = title;
 	}
@@ -74,11 +74,11 @@ public class Event
 	@JsonProperty("description")
 	public String getDescription()
 	{
-		return description;
+		return this.description;
 	}
 	
 	@JsonProperty("description")
-	public void setDescription(String description)
+	public void setDescription(final String description)
 	{
 		this.description = description;
 	}
@@ -86,11 +86,11 @@ public class Event
 	@JsonProperty("url")
 	public String getUrl()
 	{
-		return url;
+		return this.url;
 	}
 	
 	@JsonProperty("url")
-	public void setUrl(String url)
+	public void setUrl(final String url)
 	{
 		this.url = url;
 	}
@@ -102,7 +102,7 @@ public class Event
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

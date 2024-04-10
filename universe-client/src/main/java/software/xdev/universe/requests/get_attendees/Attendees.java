@@ -35,18 +35,18 @@ public class Attendees
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("nodes")
 	private List<Attendee> nodes;
 	
 	@JsonProperty("nodes")
 	public List<Attendee> getNodes()
 	{
-		return nodes;
+		return this.nodes;
 	}
 	
 	@JsonProperty("nodes")
-	public void setNodes(List<Attendee> nodes)
+	public void setNodes(final List<Attendee> nodes)
 	{
 		this.nodes = nodes;
 	}
@@ -58,7 +58,7 @@ public class Attendees
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

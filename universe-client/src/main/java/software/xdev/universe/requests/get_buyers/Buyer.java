@@ -46,7 +46,7 @@ public class Buyer
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("name")
@@ -77,11 +77,11 @@ public class Buyer
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -89,11 +89,11 @@ public class Buyer
 	@JsonProperty("name")
 	public String getName()
 	{
-		return name;
+		return this.name;
 	}
 	
 	@JsonProperty("name")
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -101,11 +101,11 @@ public class Buyer
 	@JsonProperty("firstName")
 	public String getFirstName()
 	{
-		return firstName;
+		return this.firstName;
 	}
 	
 	@JsonProperty("firstName")
-	public void setFirstName(String firstName)
+	public void setFirstName(final String firstName)
 	{
 		this.firstName = firstName;
 	}
@@ -113,11 +113,11 @@ public class Buyer
 	@JsonProperty("lastName")
 	public String getLastName()
 	{
-		return lastName;
+		return this.lastName;
 	}
 	
 	@JsonProperty("lastName")
-	public void setLastName(String lastName)
+	public void setLastName(final String lastName)
 	{
 		this.lastName = lastName;
 	}
@@ -125,11 +125,11 @@ public class Buyer
 	@JsonProperty("email")
 	public String getEmail()
 	{
-		return email;
+		return this.email;
 	}
 	
 	@JsonProperty("email")
-	public void setEmail(String email)
+	public void setEmail(final String email)
 	{
 		this.email = email;
 	}
@@ -137,11 +137,11 @@ public class Buyer
 	@JsonProperty("businessEmail")
 	public Object getBusinessEmail()
 	{
-		return businessEmail;
+		return this.businessEmail;
 	}
 	
 	@JsonProperty("businessEmail")
-	public void setBusinessEmail(Object businessEmail)
+	public void setBusinessEmail(final Object businessEmail)
 	{
 		this.businessEmail = businessEmail;
 	}
@@ -149,11 +149,11 @@ public class Buyer
 	@JsonProperty("businessAddress")
 	public Object getBusinessAddress()
 	{
-		return businessAddress;
+		return this.businessAddress;
 	}
 	
 	@JsonProperty("businessAddress")
-	public void setBusinessAddress(Object businessAddress)
+	public void setBusinessAddress(final Object businessAddress)
 	{
 		this.businessAddress = businessAddress;
 	}
@@ -161,11 +161,11 @@ public class Buyer
 	@JsonProperty("businessPhoneNumber")
 	public Object getBusinessPhoneNumber()
 	{
-		return businessPhoneNumber;
+		return this.businessPhoneNumber;
 	}
 	
 	@JsonProperty("businessPhoneNumber")
-	public void setBusinessPhoneNumber(Object businessPhoneNumber)
+	public void setBusinessPhoneNumber(final Object businessPhoneNumber)
 	{
 		this.businessPhoneNumber = businessPhoneNumber;
 	}
@@ -173,11 +173,11 @@ public class Buyer
 	@JsonProperty("isBusinessSeller")
 	public Boolean getIsBusinessSeller()
 	{
-		return isBusinessSeller;
+		return this.isBusinessSeller;
 	}
 	
 	@JsonProperty("isBusinessSeller")
-	public void setIsBusinessSeller(Boolean isBusinessSeller)
+	public void setIsBusinessSeller(final Boolean isBusinessSeller)
 	{
 		this.isBusinessSeller = isBusinessSeller;
 	}
@@ -185,11 +185,11 @@ public class Buyer
 	@JsonProperty("locale")
 	public String getLocale()
 	{
-		return locale;
+		return this.locale;
 	}
 	
 	@JsonProperty("locale")
-	public void setLocale(String locale)
+	public void setLocale(final String locale)
 	{
 		this.locale = locale;
 	}
@@ -197,11 +197,11 @@ public class Buyer
 	@JsonProperty("description")
 	public Object getDescription()
 	{
-		return description;
+		return this.description;
 	}
 	
 	@JsonProperty("description")
-	public void setDescription(Object description)
+	public void setDescription(final Object description)
 	{
 		this.description = description;
 	}
@@ -209,11 +209,11 @@ public class Buyer
 	@JsonProperty("avatarUrl")
 	public Object getAvatarUrl()
 	{
-		return avatarUrl;
+		return this.avatarUrl;
 	}
 	
 	@JsonProperty("avatarUrl")
-	public void setAvatarUrl(Object avatarUrl)
+	public void setAvatarUrl(final Object avatarUrl)
 	{
 		this.avatarUrl = avatarUrl;
 	}
@@ -221,11 +221,11 @@ public class Buyer
 	@JsonProperty("smallAvatarUrl")
 	public Object getSmallAvatarUrl()
 	{
-		return smallAvatarUrl;
+		return this.smallAvatarUrl;
 	}
 	
 	@JsonProperty("smallAvatarUrl")
-	public void setSmallAvatarUrl(Object smallAvatarUrl)
+	public void setSmallAvatarUrl(final Object smallAvatarUrl)
 	{
 		this.smallAvatarUrl = smallAvatarUrl;
 	}
@@ -237,7 +237,7 @@ public class Buyer
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

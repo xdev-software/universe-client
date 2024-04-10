@@ -42,16 +42,16 @@ public class Question
 	@JsonProperty("type")
 	private String type;
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -59,11 +59,11 @@ public class Question
 	@JsonProperty("question")
 	public String getQuestion()
 	{
-		return question;
+		return this.question;
 	}
 	
 	@JsonProperty("question")
-	public void setQuestion(String question)
+	public void setQuestion(final String question)
 	{
 		this.question = question;
 	}
@@ -71,11 +71,11 @@ public class Question
 	@JsonProperty("type")
 	public String getType()
 	{
-		return type;
+		return this.type;
 	}
 	
 	@JsonProperty("type")
-	public void setType(String type)
+	public void setType(final String type)
 	{
 		this.type = type;
 	}
@@ -87,7 +87,7 @@ public class Question
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

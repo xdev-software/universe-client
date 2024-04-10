@@ -26,7 +26,7 @@ public class GetEventsRequest implements UniverseRequest<GetEventsResponse>
 		return GetEventsResponse.class;
 	}
 	
-	public final String getQuery(final String hostId, int limit)
+	public final String getQuery(final String hostId, final int limit)
 	{
 		return "{ \"query\": \"{"
 			+ "   host(id: \\\"" + hostId + "\\\") {"

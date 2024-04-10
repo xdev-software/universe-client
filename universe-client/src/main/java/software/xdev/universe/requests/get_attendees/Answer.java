@@ -35,7 +35,7 @@ public class Answer
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("question")
 	private Question question;
 	@JsonProperty("value")
@@ -44,11 +44,11 @@ public class Answer
 	@JsonProperty("question")
 	public Question getQuestion()
 	{
-		return question;
+		return this.question;
 	}
 	
 	@JsonProperty("question")
-	public void setQuestion(Question question)
+	public void setQuestion(final Question question)
 	{
 		this.question = question;
 	}
@@ -56,11 +56,11 @@ public class Answer
 	@JsonProperty("value")
 	public String getValue()
 	{
-		return value;
+		return this.value;
 	}
 	
 	@JsonProperty("value")
-	public void setValue(String value)
+	public void setValue(final String value)
 	{
 		this.value = value;
 	}
@@ -72,7 +72,7 @@ public class Answer
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}
