@@ -2,8 +2,8 @@ package software.xdev;
 
 import java.awt.Desktop;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -69,11 +69,11 @@ public final class Application
 		{
 			try
 			{
-				Desktop.getDesktop().browse(new URI(client.getUrlToGetAuthorizationCode()));
+				Desktop.getDesktop().browse(URI.create(client.getUrlToGetAuthorizationCode()));
 			}
-			catch(final IOException | URISyntaxException ex)
+			catch(final IOException ex)
 			{
-				throw new RuntimeException(ex);
+				throw new UncheckedIOException(ex);
 			}
 		}
 		try(final Scanner scanner = new Scanner(System.in))

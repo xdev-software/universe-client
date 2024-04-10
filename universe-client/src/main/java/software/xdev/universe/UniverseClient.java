@@ -15,22 +15,17 @@
  */
 package software.xdev.universe;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,7 +49,7 @@ import software.xdev.universe.requests.get_host.GetHostResponse;
 /**
  * Client to communicate with the universe API.
  */
-public class UniverseClient
+public class UniverseClient implements AutoCloseable
 {
 	public static final String UNIVERSE_GRAPHQL_URL = "https://www.universe.com/graphql";
 	public static final String UNIVERSE_OAUTH_TOKEN = "https://www.universe.com/oauth/token";
@@ -70,13 +65,22 @@ public class UniverseClient
 	
 	protected String bearerToken;
 	
+	protected CloseableHttpClient httpClient;
+	
 	public UniverseClient(final UniverseConfiguration config)
+	{
+		this(config, HttpClients.createDefault());
+	}
+	
+	public UniverseClient(final UniverseConfiguration config, final CloseableHttpClient httpClient)
 	{
 		this.applicationId = config.applicationId();
 		this.applicationSecret = config.applicationSecret();
 		this.redirectUri = config.redirectUri();
 		this.authorizationCode = config.authorizationCode();
 		this.bearerToken = config.bearerToken();
+		
+		this.httpClient = httpClient;
 	}
 	
 	public UniverseClient withAuthorizationCode(final String authorizationCode)
@@ -249,11 +253,10 @@ public class UniverseClient
 	
 	private <T> T sendRequestAndParseResponse(
 		final UniverseRequest<T> request,
-		final HttpResponse httpResponse)
+		final String responseAsString)
 	{
 		try
 		{
-			final String responseAsString = this.sendRequest(httpResponse);
 			return this.objectMapper.readValue(responseAsString, request.getResponseClass());
 		}
 		catch(final IOException ioe)
@@ -262,24 +265,11 @@ public class UniverseClient
 		}
 	}
 	
-	private String sendRequest(final HttpResponse httpResponse) throws IOException
-	{
-		try(final BufferedReader reader = new BufferedReader(new InputStreamReader(httpResponse.getEntity()
-			.getContent(), StandardCharsets.UTF_8)))
-		{
-			return reader.lines().collect(Collectors.joining("\n"));
-		}
-	}
-	
-	private HttpResponse sendPostMessage(
+	private String sendPostMessage(
 		final String urlToCall,
 		final String jsonData,
 		final String bearerToken)
 	{
-		final HttpClient httpClient = HttpClients.custom()
-			.setDefaultRequestConfig(RequestConfig.custom()
-				.setCookieSpec(CookieSpecs.STANDARD).build())
-			.build();
 		final HttpPost post = new HttpPost(urlToCall);
 		post.addHeader("Authorization", "Bearer " + bearerToken);
 		post.addHeader("Content-Type", "application/json");
@@ -287,7 +277,7 @@ public class UniverseClient
 		
 		try
 		{
-			return httpClient.execute(post);
+			return this.httpClient.execute(post, new BasicHttpClientResponseHandler());
 		}
 		catch(final IOException ioe)
 		{
@@ -295,21 +285,30 @@ public class UniverseClient
 		}
 	}
 	
-	private HttpResponse sendPostMessage(
+	private String sendPostMessage(
 		final String urlToCall,
 		final String jsonData)
 	{
-		final HttpClient httpClient = HttpClients.custom()
-			.setDefaultRequestConfig(RequestConfig.custom()
-				.setCookieSpec(CookieSpecs.STANDARD).build())
-			.build();
 		final HttpPost post = new HttpPost(urlToCall);
 		post.addHeader("Content-Type", "application/json");
 		post.setEntity(new StringEntity(jsonData, ContentType.APPLICATION_JSON));
 		
 		try
 		{
-			return httpClient.execute(post);
+			return this.httpClient.execute(post, new BasicHttpClientResponseHandler());
+		}
+		catch(final IOException e)
+		{
+			throw new UncheckedIOException(e);
+		}
+	}
+	
+	@Override
+	public void close()
+	{
+		try
+		{
+			this.httpClient.close();
 		}
 		catch(final IOException e)
 		{
