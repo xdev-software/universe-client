@@ -4,7 +4,7 @@
 
 # Universe client for Java
 
-A simple Java client for the [Universe API](https://universe.com/api).
+A simple Java client for the [Universe API](https://developers.universe.com).
 
 ## Usage
 
