@@ -8,10 +8,6 @@ A simple Java client for the [Universe API](https://developers.universe.com).
 
 ## Usage
 
-Before you can start, there are a few config-entries that must be set.
-They can get configured through the ``microprofile-config.properties`` (see [microprofile-config-template.properties](universe-client-demo/src/main/resources/META-INF/microprofile-config-template.properties)))
-or through the UniverseConfiguration with ``client.getConfig().with...`` (see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
-
 The two basic entries are the ``ApplicationId`` and the ``RedirectUri``. They **must** be set.
 
 If these two entries are set, you need to get ``AuthorizationCode``. This is a one-time-only code, which
