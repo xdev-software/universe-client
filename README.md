@@ -21,15 +21,17 @@ The ``BearerToken`` can be used for all your future requests. It is usually vali
 If the ``BearerToken`` is set, you can use the actual API calls.
 
 ### Example
-Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java).
+Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/Application.java).
 
 ```java
-final UniverseClient client = new UniverseClient();
+UniverseClient client = new UniverseClient(yourConfig);
+
 // Get Events
-final List<Event> events = client.requestEvents(hostId);
+List<Event> events = client.requestEvents(hostId);
 events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
+
 // Get Attendees
-final List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
+List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
 ```
 
 ## GraphQL
