@@ -35,18 +35,18 @@ public class Orders
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("nodes")
 	private List<Node> nodes;
 	
 	@JsonProperty("nodes")
 	public List<Node> getNodes()
 	{
-		return nodes;
+		return this.nodes;
 	}
 	
 	@JsonProperty("nodes")
-	public void setNodes(List<Node> nodes)
+	public void setNodes(final List<Node> nodes)
 	{
 		this.nodes = nodes;
 	}
@@ -58,7 +58,7 @@ public class Orders
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

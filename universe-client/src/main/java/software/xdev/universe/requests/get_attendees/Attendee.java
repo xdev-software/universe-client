@@ -43,7 +43,7 @@ public class Attendee
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("firstName")
@@ -62,11 +62,11 @@ public class Attendee
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -74,11 +74,11 @@ public class Attendee
 	@JsonProperty("firstName")
 	public String getFirstName()
 	{
-		return firstName;
+		return this.firstName;
 	}
 	
 	@JsonProperty("firstName")
-	public void setFirstName(String firstName)
+	public void setFirstName(final String firstName)
 	{
 		this.firstName = firstName;
 	}
@@ -86,11 +86,11 @@ public class Attendee
 	@JsonProperty("lastName")
 	public String getLastName()
 	{
-		return lastName;
+		return this.lastName;
 	}
 	
 	@JsonProperty("lastName")
-	public void setLastName(String lastName)
+	public void setLastName(final String lastName)
 	{
 		this.lastName = lastName;
 	}
@@ -98,11 +98,11 @@ public class Attendee
 	@JsonProperty("email")
 	public String getEmail()
 	{
-		return email;
+		return this.email;
 	}
 	
 	@JsonProperty("email")
-	public void setEmail(String email)
+	public void setEmail(final String email)
 	{
 		this.email = email;
 	}
@@ -110,11 +110,11 @@ public class Attendee
 	@JsonProperty("rate")
 	public Rate getRate()
 	{
-		return rate;
+		return this.rate;
 	}
 	
 	@JsonProperty("rate")
-	public void setRate(Rate rate)
+	public void setRate(final Rate rate)
 	{
 		this.rate = rate;
 	}
@@ -122,11 +122,11 @@ public class Attendee
 	@JsonProperty("order")
 	public Order getOrder()
 	{
-		return order;
+		return this.order;
 	}
 	
 	@JsonProperty("order")
-	public void setOrder(Order order)
+	public void setOrder(final Order order)
 	{
 		this.order = order;
 	}
@@ -134,11 +134,11 @@ public class Attendee
 	@JsonProperty("answers")
 	public List<Answer> getAnswers()
 	{
-		return answers;
+		return this.answers;
 	}
 	
 	@JsonProperty("answers")
-	public void setAnswers(List<Answer> answers)
+	public void setAnswers(final List<Answer> answers)
 	{
 		this.answers = answers;
 	}
@@ -150,7 +150,7 @@ public class Attendee
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}
@@ -158,9 +158,9 @@ public class Attendee
 	/**
 	 * @return {@code null} if no Question or answer is found
 	 */
-	public String getUntypedAnswerToQuestion(String question)
+	public String getUntypedAnswerToQuestion(final String question)
 	{
-		return getTypedAnswerToQuestion(
+		return this.getTypedAnswerToQuestion(
 			new TypedQuestion<>(
 				question,
 				value -> value)
@@ -172,7 +172,7 @@ public class Attendee
 	 *
 	 * @return {@code null} if no Question or answer is found
 	 */
-	public <T> T getTypedAnswerToQuestion(TypedQuestion<T> question)
+	public <T> T getTypedAnswerToQuestion(final TypedQuestion<T> question)
 	{
 		final Optional<Answer> answerForQuestion = this.getAnswers().stream().filter(
 			answer -> question.getQuestionTitle().equals(answer.getQuestion().getQuestion())
@@ -189,7 +189,7 @@ public class Attendee
 		private final String questionTitle;
 		private final Function<String, T> parseFunction;
 		
-		TypedQuestion(String questionTitle, Function<String, T> parseFunction)
+		TypedQuestion(final String questionTitle, final Function<String, T> parseFunction)
 		{
 			this.questionTitle = questionTitle;
 			this.parseFunction = parseFunction;
@@ -200,9 +200,9 @@ public class Attendee
 			return this.questionTitle;
 		}
 		
-		public T parseValue(String value)
+		public T parseValue(final String value)
 		{
-			return parseFunction.apply(value);
+			return this.parseFunction.apply(value);
 		}
 	}
 }

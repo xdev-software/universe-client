@@ -36,16 +36,16 @@ public class Data
 	@JsonProperty("host")
 	private Host host;
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	
 	@JsonProperty("host")
 	public Host getHost()
 	{
-		return host;
+		return this.host;
 	}
 	
 	@JsonProperty("host")
-	public void setHost(Host host)
+	public void setHost(final Host host)
 	{
 		this.host = host;
 	}
@@ -57,7 +57,7 @@ public class Data
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

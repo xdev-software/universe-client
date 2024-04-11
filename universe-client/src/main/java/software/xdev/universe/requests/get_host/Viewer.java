@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Viewer
 {
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("id")
 	private String id;
 	@JsonProperty("firstName")
@@ -46,11 +46,11 @@ public class Viewer
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -58,11 +58,11 @@ public class Viewer
 	@JsonProperty("firstName")
 	public String getFirstName()
 	{
-		return firstName;
+		return this.firstName;
 	}
 	
 	@JsonProperty("firstName")
-	public void setFirstName(String firstName)
+	public void setFirstName(final String firstName)
 	{
 		this.firstName = firstName;
 	}
@@ -70,11 +70,11 @@ public class Viewer
 	@JsonProperty("lastName")
 	public Object getLastName()
 	{
-		return lastName;
+		return this.lastName;
 	}
 	
 	@JsonProperty("lastName")
-	public void setLastName(Object lastName)
+	public void setLastName(final Object lastName)
 	{
 		this.lastName = lastName;
 	}
@@ -86,7 +86,7 @@ public class Viewer
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

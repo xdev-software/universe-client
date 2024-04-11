@@ -1,58 +1,57 @@
-package software.xdev.universe.demo;
+package software.xdev;
 
 import java.awt.Desktop;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Scanner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import software.xdev.universe.UniverseClient;
+import software.xdev.universe.UniverseConfiguration;
 import software.xdev.universe.requests.get_attendees.Attendee;
 import software.xdev.universe.requests.get_attendees.DefaultQuestions;
-import software.xdev.universe.requests.get_bearer_token.GetBearerTokenResponse;
 import software.xdev.universe.requests.get_buyers.Buyer;
 import software.xdev.universe.requests.get_events.Event;
 
 
-public class Demo
+public final class Application
 {
-	private static final Logger logger = LogManager.getLogger(Demo.class);
-	
-	public static void main(final String[] args) throws IOException, URISyntaxException
+	public static void main(final String[] args)
 	{
-		final UniverseClient client = new UniverseClient();
+		final UniverseClient client = new UniverseClient(new UniverseConfiguration(
+			System.getProperty("applicationId"),
+			System.getProperty("applicationSecret"),
+			System.getProperty("redirectUri"),
+			System.getProperty("authorizationCode"),
+			System.getProperty("bearerToken")
+		));
 		
 		// STEP 1: Get Authorization Code
 		// After getting the authorization code it must be set in the microprofile-config.properties
 		// or through client.getConfig().withAuthorizationCode()
-		final String authorizationCode = openBrowserToGetAuthorizationCodeAndWaitForInput();
-		client.getConfig().withAuthorizationCode(authorizationCode);
+		client.withAuthorizationCode(openBrowserToGetAuthorizationCodeAndWaitForInput(client));
 		
 		// STEP 2: Get Bearer Token
 		// After getting the bearer token it must be set in the microprofile-config.properties
 		// or through client.getConfig().withBearerToken()
-		final GetBearerTokenResponse bearerToken = client.requestBearerToken();
-		client.getConfig().withBearerToken(bearerToken.getAccessToken());
+		client.withBearerToken(client.requestBearerToken().getAccessToken());
 		
 		// STEP 3: Get Host Id
 		final String hostId = client.requestHostId();
 		
 		// STEP 4: Get Events
 		final List<Event> events = client.requestEvents(hostId);
-		events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
+		events.forEach(event -> System.out.println(("Event: " + event.getTitle() + "(id:" + event.getId() + ")")));
 		
 		// STEP 5: Get Buyers
 		final List<Buyer> buyers = client.requestBuyersInEvent(events.get(0).getId(), 5, 0);
-		buyers.forEach(buyer -> logger.info("Buyer: " + buyer.getName()));
+		buyers.forEach(buyer -> System.out.println(("Buyer: " + buyer.getName())));
 		
 		// STEP 6: Get Attendees
 		final List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
 		attendees.forEach(attendee ->
-			logger.info(
+			System.out.println(
 				"Attendee: "
 					+ "\n     Name: " + attendee.getTypedAnswerToQuestion(DefaultQuestions.FIRST_NAME)
 					+ " " + attendee.getTypedAnswerToQuestion(DefaultQuestions.LAST_NAME)
@@ -64,17 +63,27 @@ public class Demo
 		);
 	}
 	
-	private static String openBrowserToGetAuthorizationCodeAndWaitForInput() throws URISyntaxException, IOException
+	private static String openBrowserToGetAuthorizationCodeAndWaitForInput(final UniverseClient client)
 	{
-		final UniverseClient client = new UniverseClient();
 		if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
 		{
-			Desktop.getDesktop().browse(new URI(client.getUrlToGetAuthorizationCode()));
+			try
+			{
+				Desktop.getDesktop().browse(URI.create(client.getUrlToGetAuthorizationCode()));
+			}
+			catch(final IOException ex)
+			{
+				throw new UncheckedIOException(ex);
+			}
 		}
-		try(Scanner scanner = new Scanner(System.in))
+		try(final Scanner scanner = new Scanner(System.in))
 		{
 			System.out.println("Please input displayed authorization code:");
 			return scanner.nextLine();
 		}
+	}
+	
+	private Application()
+	{
 	}
 }

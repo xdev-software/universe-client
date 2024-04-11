@@ -26,7 +26,7 @@ public class GetAttendeesRequest implements UniverseRequest<GetAttendeesResponse
 		return GetAttendeesResponse.class;
 	}
 	
-	public final String getQuery(String eventId, int limit, int offset)
+	public final String getQuery(final String  eventId, final int limit, final int offset)
 	{
 		return "{ \"query\": \"{ event(id: \\\"" + eventId + "\\\") {"
 			+ "    attendees {"

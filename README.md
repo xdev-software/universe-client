@@ -1,17 +1,12 @@
-[![Latest version](https://img.shields.io/maven-central/v/software.xdev/universe-client)](https://mvnrepository.com/artifact/software.xdev/universe-client)
+[![Latest version](https://img.shields.io/maven-central/v/software.xdev/universe-client?logo=apache%20maven)](https://mvnrepository.com/artifact/software.xdev/universe-client)
 [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/universe-client/checkBuild.yml?branch=develop)](https://github.com/xdev-software/universe-client/actions/workflows/checkBuild.yml?query=branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_universe-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_universe-client)
 
 # Universe client for Java
 
-A simple Java API for easy usage of [universe](https://universe.com/).
-Here is the [documentation of the actual universe API](https://universe.com/api).
+A simple Java client for the [Universe API](https://developers.universe.com).
 
 ## Usage
-
-Before you can start, there are a few config-entries that must be set.
-They can get configured through the ``microprofile-config.properties`` (see [microprofile-config-template.properties](universe-client-demo/src/main/resources/META-INF/microprofile-config-template.properties)))
-or through the UniverseConfiguration with ``client.getConfig().with...`` (see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
 
 The two basic entries are the ``ApplicationId`` and the ``RedirectUri``. They **must** be set.
 
@@ -26,15 +21,17 @@ The ``BearerToken`` can be used for all your future requests. It is usually vali
 If the ``BearerToken`` is set, you can use the actual API calls.
 
 ### Example
-Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/universe/demo/Demo.java)).
+Full example, see [Demo](universe-client-demo/src/main/java/software/xdev/Application.java).
 
 ```java
-final UniverseClient client = new UniverseClient();
+UniverseClient client = new UniverseClient(yourConfig);
+
 // Get Events
-final List<Event> events = client.requestEvents(hostId);
+List<Event> events = client.requestEvents(hostId);
 events.forEach(event -> logger.info("Event: " + event.getTitle() + "(id:" + event.getId() + ")"));
+
 // Get Attendees
-final List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
+List<Attendee> attendees = client.requestAttendeesInEvent(events.get(0).getId(), 5, 0);
 ```
 
 ## GraphQL
@@ -57,19 +54,14 @@ Get Schema:
 ```
 
 ## Installation
-
 [Installation guide for the latest release](https://github.com/xdev-software/universe-client/releases/latest#Installation)
 
-## Support
 
-If you need support as soon as possible and you can't wait for any pull request, feel free to
-use [our support](https://xdev.software/en/services/support).
+## Support
+If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services/support).
 
 ## Contributing
-
 See the [contributing guide](./CONTRIBUTING.md) for detailed instructions on how to get started with our project.
 
 ## Dependencies and Licenses
-
-View the [license of the current project](LICENSE) or
-the [summary including all dependencies](https://xdev-software.github.io/universe-client/dependencies/)
+View the [license of the current project](LICENSE) or the [summary including all dependencies](https://xdev-software.github.io/universe-client/dependencies)

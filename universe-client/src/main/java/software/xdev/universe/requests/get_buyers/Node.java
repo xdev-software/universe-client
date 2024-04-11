@@ -34,18 +34,18 @@ public class Node
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("buyer")
 	private Buyer buyer;
 	
 	@JsonProperty("buyer")
 	public Buyer getBuyer()
 	{
-		return buyer;
+		return this.buyer;
 	}
 	
 	@JsonProperty("buyer")
-	public void setBuyer(Buyer buyer)
+	public void setBuyer(final Buyer buyer)
 	{
 		this.buyer = buyer;
 	}
@@ -57,7 +57,7 @@ public class Node
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

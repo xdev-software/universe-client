@@ -36,16 +36,16 @@ public class Rate
 	@JsonProperty("name")
 	private String name;
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	
 	@JsonProperty("name")
 	public String getName()
 	{
-		return name;
+		return this.name;
 	}
 	
 	@JsonProperty("name")
-	public void setName(String name)
+	public void setName(final String name)
 	{
 		this.name = name;
 	}
@@ -57,7 +57,7 @@ public class Rate
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

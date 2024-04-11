@@ -40,7 +40,7 @@ public class GetBearerTokenResponse
 {
 	
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	@JsonProperty("access_token")
 	private String accessToken;
 	@JsonProperty("token_type")
@@ -57,11 +57,11 @@ public class GetBearerTokenResponse
 	@JsonProperty("access_token")
 	public String getAccessToken()
 	{
-		return accessToken;
+		return this.accessToken;
 	}
 	
 	@JsonProperty("access_token")
-	public void setAccessToken(String accessToken)
+	public void setAccessToken(final String accessToken)
 	{
 		this.accessToken = accessToken;
 	}
@@ -69,11 +69,11 @@ public class GetBearerTokenResponse
 	@JsonProperty("token_type")
 	public String getTokenType()
 	{
-		return tokenType;
+		return this.tokenType;
 	}
 	
 	@JsonProperty("token_type")
-	public void setTokenType(String tokenType)
+	public void setTokenType(final String tokenType)
 	{
 		this.tokenType = tokenType;
 	}
@@ -84,28 +84,28 @@ public class GetBearerTokenResponse
 	@JsonProperty("expires_in")
 	public Integer getExpiresIn()
 	{
-		return expiresIn;
+		return this.expiresIn;
 	}
 	
 	@JsonProperty("expires_in")
-	public void setExpiresIn(Integer expiresIn)
+	public void setExpiresIn(final Integer expiresIn)
 	{
 		this.expiresIn = expiresIn;
 	}
 	
 	public Duration getExpiresInAsDuration()
 	{
-		return Duration.ofSeconds(getExpiresIn());
+		return Duration.ofSeconds(this.getExpiresIn());
 	}
 	
 	@JsonProperty("refresh_token")
 	public String getRefreshToken()
 	{
-		return refreshToken;
+		return this.refreshToken;
 	}
 	
 	@JsonProperty("refresh_token")
-	public void setRefreshToken(String refreshToken)
+	public void setRefreshToken(final String refreshToken)
 	{
 		this.refreshToken = refreshToken;
 	}
@@ -113,11 +113,11 @@ public class GetBearerTokenResponse
 	@JsonProperty("scope")
 	public String getScope()
 	{
-		return scope;
+		return this.scope;
 	}
 	
 	@JsonProperty("scope")
-	public void setScope(String scope)
+	public void setScope(final String scope)
 	{
 		this.scope = scope;
 	}
@@ -125,11 +125,11 @@ public class GetBearerTokenResponse
 	@JsonProperty("created_at")
 	public Integer getCreatedAt()
 	{
-		return createdAt;
+		return this.createdAt;
 	}
 	
 	@JsonProperty("created_at")
-	public void setCreatedAt(Integer createdAt)
+	public void setCreatedAt(final Integer createdAt)
 	{
 		this.createdAt = createdAt;
 	}
@@ -141,7 +141,7 @@ public class GetBearerTokenResponse
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}

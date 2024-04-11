@@ -39,16 +39,16 @@ public class Order
 	@JsonProperty("id")
 	private String id;
 	@JsonIgnore
-	private final Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+	private final Map<String, Object> additionalProperties = new LinkedHashMap<>();
 	
 	@JsonProperty("state")
 	public String getState()
 	{
-		return state;
+		return this.state;
 	}
 	
 	@JsonProperty("state")
-	public void setState(String state)
+	public void setState(final String state)
 	{
 		this.state = state;
 	}
@@ -56,11 +56,11 @@ public class Order
 	@JsonProperty("id")
 	public String getId()
 	{
-		return id;
+		return this.id;
 	}
 	
 	@JsonProperty("id")
-	public void setId(String id)
+	public void setId(final String id)
 	{
 		this.id = id;
 	}
@@ -72,7 +72,7 @@ public class Order
 	}
 	
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value)
+	public void setAdditionalProperty(final String name, final Object value)
 	{
 		this.additionalProperties.put(name, value);
 	}
