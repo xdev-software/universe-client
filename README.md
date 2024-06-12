@@ -1,5 +1,5 @@
 [![Latest version](https://img.shields.io/maven-central/v/software.xdev/universe-client?logo=apache%20maven)](https://mvnrepository.com/artifact/software.xdev/universe-client)
-[![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/universe-client/checkBuild.yml?branch=develop)](https://github.com/xdev-software/universe-client/actions/workflows/checkBuild.yml?query=branch%3Adevelop)
+[![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/universe-client/check-build.yml?branch=develop)](https://github.com/xdev-software/universe-client/actions/workflows/check-build.yml?query=branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_universe-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_universe-client)
 
 # Universe client for Java
