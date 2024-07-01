@@ -5,17 +5,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>template-placeholder</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>universe-client</artifactId>
+	<version>2.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>template-placeholder</name>
-	<description>template-placeholder</description>
-	<url>https://github.com/xdev-software/template-placeholder</url>
+	<name>universe-client</name>
+	<description>universe-client</description>
+	<url>https://github.com/xdev-software/universe-client</url>
 
 	<scm>
-		<url>https://github.com/xdev-software/template-placeholder</url>
-		<connection>scm:git:https://github.com/xdev-software/template-placeholder.git</connection>
+		<url>https://github.com/xdev-software/universe-client</url>
+		<connection>scm:git:https://github.com/xdev-software/universe-client.git</connection>
 	</scm>
 
 	<inceptionYear>2023</inceptionYear>
@@ -83,6 +83,20 @@
 			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.3.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.17.1</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<pluginManagement>
@@ -279,6 +293,9 @@
 							<rulesets>
 								<ruleset>../.config/pmd/ruleset.xml</ruleset>
 							</rulesets>
+							<excludes>
+								<exclude>software/xdev/universe/requests/**</exclude>
+							</excludes>
 						</configuration>
 						<dependencies>
 							<dependency>
